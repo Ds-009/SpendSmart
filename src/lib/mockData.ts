@@ -112,7 +112,7 @@ export const mockAIInsights: AIInsight[] = [
   },
   {
     id: '2',
-    message: "Your transportation spending is higher than usual. Consider carpooling or public transit to save $80/month.",
+    message: "Your transportation spending is higher than usual. Consider carpooling or public transit to save ₹80/month.",
     type: 'tip',
     timestamp: new Date(Date.now() - 3600000).toISOString()
   },

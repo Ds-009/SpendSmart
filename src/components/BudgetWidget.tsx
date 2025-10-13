@@ -27,7 +27,7 @@ const BudgetWidget = ({ budgets }: BudgetWidgetProps) => {
                   )}
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  ${budget.spent.toFixed(2)} / ${budget.limit.toFixed(2)}
+                  ₹{budget.spent.toFixed(2)} / ₹{budget.limit.toFixed(2)}
                 </span>
               </div>
               <Progress 
@@ -45,12 +45,12 @@ const BudgetWidget = ({ budgets }: BudgetWidgetProps) => {
               />
               {isOverBudget && (
                 <p className="text-xs text-destructive">
-                  ${(budget.spent - budget.limit).toFixed(2)} over budget
+                  ₹{(budget.spent - budget.limit).toFixed(2)} over budget
                 </p>
               )}
               {isNearLimit && !isOverBudget && (
                 <p className="text-xs text-warning">
-                  ${(budget.limit - budget.spent).toFixed(2)} remaining
+                  ₹{(budget.limit - budget.spent).toFixed(2)} remaining
                 </p>
               )}
             </div>

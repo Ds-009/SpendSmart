@@ -48,7 +48,7 @@ const CategoryChart = ({ transactions }: CategoryChartProps) => {
               ))}
             </Pie>
             <Tooltip 
-              formatter={(value: number) => `$${value.toFixed(2)}`}
+              formatter={(value: number) => `₹${value.toFixed(2)}`}
               contentStyle={{
                 backgroundColor: 'hsl(var(--card))',
                 border: '1px solid hsl(var(--border))',

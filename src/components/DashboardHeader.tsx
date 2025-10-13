@@ -15,7 +15,7 @@ const DashboardHeader = ({ balance, income, expenses }: DashboardHeaderProps) =>
           <div>
             <p className="text-sm font-medium text-primary-foreground/80">Total Balance</p>
             <h2 className="text-3xl font-bold text-primary-foreground mt-2">
-              ${balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              ₹{balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </h2>
           </div>
           <div className="h-12 w-12 rounded-full bg-primary-foreground/20 flex items-center justify-center">
@@ -29,7 +29,7 @@ const DashboardHeader = ({ balance, income, expenses }: DashboardHeaderProps) =>
           <div>
             <p className="text-sm font-medium text-success-foreground/80">Monthly Income</p>
             <h2 className="text-3xl font-bold text-success-foreground mt-2">
-              ${income.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              ₹{income.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </h2>
           </div>
           <div className="h-12 w-12 rounded-full bg-success-foreground/20 flex items-center justify-center">
@@ -43,7 +43,7 @@ const DashboardHeader = ({ balance, income, expenses }: DashboardHeaderProps) =>
           <div>
             <p className="text-sm font-medium text-accent-foreground/80">Monthly Expenses</p>
             <h2 className="text-3xl font-bold text-accent-foreground mt-2">
-              ${expenses.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              ₹{expenses.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </h2>
           </div>
           <div className="h-12 w-12 rounded-full bg-accent-foreground/20 flex items-center justify-center">

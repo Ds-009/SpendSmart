@@ -66,7 +66,7 @@ const TransactionList = ({ transactions, onAddTransaction }: TransactionListProp
               transaction.type === 'income' ? 'text-success' : 'text-foreground'
             }`}>
               {transaction.type === 'income' ? '+' : '-'}
-              ${transaction.amount.toFixed(2)}
+              ₹{transaction.amount.toFixed(2)}
             </div>
           </div>
         ))}

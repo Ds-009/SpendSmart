@@ -38,10 +38,10 @@ const SavingsGoals = ({ goals }: SavingsGoalsProps) => {
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-medium text-foreground">
-                    ${goal.currentAmount.toLocaleString()}
+                    ₹{goal.currentAmount.toLocaleString('en-IN')}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    of ${goal.targetAmount.toLocaleString()}
+                    of ₹{goal.targetAmount.toLocaleString('en-IN')}
                   </p>
                 </div>
               </div>
@@ -57,7 +57,7 @@ const SavingsGoals = ({ goals }: SavingsGoalsProps) => {
                   {percentage.toFixed(0)}% complete
                 </p>
                 <p className="text-xs font-medium text-primary">
-                  ${remaining.toLocaleString()} to go
+                  ₹{remaining.toLocaleString('en-IN')} to go
                 </p>
               </div>
             </div>
@@ -71,7 +71,7 @@ const SavingsGoals = ({ goals }: SavingsGoalsProps) => {
           <div>
             <p className="text-sm font-medium text-foreground">AI Suggestion</p>
             <p className="text-xs text-muted-foreground mt-1">
-              Save an extra $150/month on dining to reach your vacation goal 2 months earlier!
+              Save an extra ₹150/month on dining to reach your vacation goal 2 months earlier!
             </p>
           </div>
         </div>

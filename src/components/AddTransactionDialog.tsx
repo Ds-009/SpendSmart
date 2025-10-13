@@ -51,7 +51,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
     
     toast({
       title: "Transaction added!",
-      description: `${formData.description} - $${formData.amount}`,
+      description: `${formData.description} - ₹${formData.amount}`,
     });
     
     onOpenChange(false);
