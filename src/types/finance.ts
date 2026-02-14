@@ -7,7 +7,7 @@ export interface Transaction {
   type: 'income' | 'expense';
 }
 
-export type TransactionCategory = 
+export type TransactionCategory =
   | 'Food & Dining'
   | 'Transportation'
   | 'Shopping'
@@ -38,4 +38,40 @@ export interface AIInsight {
   message: string;
   type: 'tip' | 'alert' | 'achievement';
   timestamp: string;
+}
+
+export interface MonthlyAIReport {
+  monthLabel: string;
+  totalSpending: number;
+  biggestCategory: {
+    name: string;
+    amount: number;
+    share: number;
+  };
+  monthOverMonthChange: {
+    percent: number;
+    direction: 'up' | 'down' | 'same';
+  };
+  aiSavingsTips: string[];
+  graphInsights: string[];
+  summary: string;
+  monthlySeries: Array<{
+    month: string;
+    spending: number;
+  }>;
+}
+
+export interface SavingsPlan {
+  monthlySaving: number;
+  goalName: string;
+  targetAmount: number;
+  months: number;
+  suggestions: string[];
+}
+
+export interface OverspendingAlert {
+  id: string;
+  category: string;
+  message: string;
+  severity: 'medium' | 'high';
 }

@@ -2,11 +2,13 @@ import { Transaction } from '@/types/finance';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowUpRight, ArrowDownRight, Plus } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, Plus, Pencil, Trash2 } from 'lucide-react';
 
 interface TransactionListProps {
   transactions: Transaction[];
   onAddTransaction: () => void;
+  onEditTransaction: (transaction: Transaction) => void;
+  onDeleteTransaction: (transactionId: string) => void;
 }
 
 const categoryColors: Record<string, string> = {
@@ -18,10 +20,15 @@ const categoryColors: Record<string, string> = {
   'Healthcare': 'bg-success/20 text-success',
   'Travel': 'bg-primary/20 text-primary',
   'Income': 'bg-success/20 text-success',
-  'Other': 'bg-muted/20 text-muted-foreground'
+  'Other': 'bg-muted/20 text-muted-foreground',
 };
 
-const TransactionList = ({ transactions, onAddTransaction }: TransactionListProps) => {
+const TransactionList = ({
+  transactions,
+  onAddTransaction,
+  onEditTransaction,
+  onDeleteTransaction,
+}: TransactionListProps) => {
   const recentTransactions = transactions.slice(0, 6);
 
   return (
@@ -41,9 +48,11 @@ const TransactionList = ({ transactions, onAddTransaction }: TransactionListProp
             className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
           >
             <div className="flex items-center gap-3 flex-1">
-              <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                transaction.type === 'income' ? 'bg-success/20' : 'bg-accent/20'
-              }`}>
+              <div
+                className={`h-10 w-10 rounded-full flex items-center justify-center ${
+                  transaction.type === 'income' ? 'bg-success/20' : 'bg-accent/20'
+                }`}
+              >
                 {transaction.type === 'income' ? (
                   <ArrowUpRight className="h-5 w-5 text-success" />
                 ) : (
@@ -62,11 +71,32 @@ const TransactionList = ({ transactions, onAddTransaction }: TransactionListProp
                 </div>
               </div>
             </div>
-            <div className={`text-lg font-semibold ${
-              transaction.type === 'income' ? 'text-success' : 'text-foreground'
-            }`}>
-              {transaction.type === 'income' ? '+' : '-'}
-              ₹{transaction.amount.toFixed(2)}
+            <div className="flex items-center gap-3">
+              <div
+                className={`text-lg font-semibold ${
+                  transaction.type === 'income' ? 'text-success' : 'text-foreground'
+                }`}
+              >
+                {transaction.type === 'income' ? '+' : '-'}INR {transaction.amount.toFixed(2)}
+              </div>
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8"
+                onClick={() => onEditTransaction(transaction)}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 text-destructive hover:text-destructive"
+                onClick={() => onDeleteTransaction(transaction.id)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         ))}

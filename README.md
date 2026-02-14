@@ -60,6 +60,18 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## Recommended architecture for AI features
+
+Option A (best for this project): **Supabase + AI API (no heavy backend)**
+
+- Supabase handles auth (login/signup), database, and storage.
+- Keep Node server minimal and only for AI calls.
+- Current app includes UI + local logic for:
+  - Monthly AI Report Generator
+  - Personalized Savings Goal Planner
+  - Overspending Alerts
+- To productionize, replace local logic in `src/lib/aiInsights.ts` with API calls from your lightweight Node endpoint.
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/a2396e0f-9215-4ef0-9d86-f90fbc5b8b50) and click on Share -> Publish.
@@ -71,3 +83,30 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## MySQL API quick run (user_id = 1)
+
+1. Configure `.env` with your MySQL credentials.
+2. Start API server:
+
+```sh
+npm run dev:api
+```
+
+3. Start frontend in another terminal:
+
+```sh
+npm run dev
+```
+
+4. Health check:
+
+```sh
+http://localhost:3001/api/health
+```
+
+AI endpoints used by the dashboard:
+
+- `GET /api/ai/monthly-report?userId=1`
+- `POST /api/ai/savings-plan`
+- `GET /api/ai/overspending-alerts?userId=1`

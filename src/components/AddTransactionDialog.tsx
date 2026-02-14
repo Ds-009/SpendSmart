@@ -16,12 +16,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { TransactionCategory } from '@/types/finance';
+import { Transaction, TransactionCategory } from '@/types/finance';
 import { useToast } from '@/hooks/use-toast';
 
 interface AddTransactionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onAddTransaction: (transaction: Transaction) => Promise<void>;
 }
 
 const categories: TransactionCategory[] = [
@@ -33,35 +34,89 @@ const categories: TransactionCategory[] = [
   'Healthcare',
   'Travel',
   'Income',
-  'Other'
+  'Other',
 ];
 
-const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps) => {
+const getLocalDateString = () => {
+  const now = new Date();
+  const timezoneOffsetMs = now.getTimezoneOffset() * 60 * 1000;
+  return new Date(now.getTime() - timezoneOffsetMs).toISOString().split('T')[0];
+};
+
+const createTempId = () => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+
+  return `tmp-${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`;
+};
+
+const AddTransactionDialog = ({ open, onOpenChange, onAddTransaction }: AddTransactionDialogProps) => {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     description: '',
     amount: '',
-    category: '' as TransactionCategory,
+    category: 'Other' as TransactionCategory,
     type: 'expense' as 'income' | 'expense',
-    date: new Date().toISOString().split('T')[0]
+    date: getLocalDateString(),
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    toast({
-      title: "Transaction added!",
-      description: `${formData.description} - ₹${formData.amount}`,
-    });
-    
-    onOpenChange(false);
-    setFormData({
-      description: '',
-      amount: '',
-      category: '' as TransactionCategory,
-      type: 'expense',
-      date: new Date().toISOString().split('T')[0]
-    });
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const amount = Number(formData.amount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      toast({
+        title: 'Invalid amount',
+        description: 'Please enter a valid positive number.',
+      });
+      return;
+    }
+
+    const description = formData.description.trim();
+    if (!description) {
+      toast({
+        title: 'Description required',
+        description: 'Please add a short description.',
+      });
+      return;
+    }
+
+    const transaction: Transaction = {
+      id: createTempId(),
+      description,
+      amount,
+      category: formData.category,
+      type: formData.type,
+      date: formData.date,
+    };
+
+    try {
+      setIsSubmitting(true);
+      await onAddTransaction(transaction);
+
+      toast({
+        title: 'Transaction added',
+        description: `${transaction.description} - INR ${transaction.amount.toFixed(2)}`,
+      });
+
+      onOpenChange(false);
+      setFormData({
+        description: '',
+        amount: '',
+        category: 'Other' as TransactionCategory,
+        type: 'expense',
+        date: getLocalDateString(),
+      });
+    } catch {
+      toast({
+        title: 'Save failed',
+        description: 'Could not save transaction. Try again.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -69,9 +124,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add Transaction</DialogTitle>
-          <DialogDescription>
-            Record a new income or expense transaction
-          </DialogDescription>
+          <DialogDescription>Record a new income or expense transaction</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
@@ -136,7 +189,13 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
               <Button
                 type="button"
                 variant={formData.type === 'expense' ? 'default' : 'outline'}
-                onClick={() => setFormData({ ...formData, type: 'expense' })}
+                onClick={() =>
+                  setFormData({
+                    ...formData,
+                    type: 'expense',
+                    category: formData.category === 'Income' ? 'Other' : formData.category,
+                  })
+                }
                 className="flex-1"
               >
                 Expense
@@ -144,7 +203,7 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
               <Button
                 type="button"
                 variant={formData.type === 'income' ? 'default' : 'outline'}
-                onClick={() => setFormData({ ...formData, type: 'income' })}
+                onClick={() => setFormData({ ...formData, type: 'income', category: 'Income' })}
                 className="flex-1"
               >
                 Income
@@ -152,8 +211,8 @@ const AddTransactionDialog = ({ open, onOpenChange }: AddTransactionDialogProps)
             </div>
           </div>
 
-          <Button type="submit" className="w-full bg-primary hover:bg-primary-dark">
-            Add Transaction
+          <Button type="submit" className="w-full bg-primary hover:bg-primary-dark" disabled={isSubmitting}>
+            {isSubmitting ? 'Saving...' : 'Add Transaction'}
           </Button>
         </form>
       </DialogContent>
