@@ -10,6 +10,7 @@ import AddTransactionDialog from '@/components/AddTransactionDialog';
 import MonthlyAIReport from '@/components/MonthlyAIReport';
 import SavingsGoalPlanner from '@/components/SavingsGoalPlanner';
 import OverspendingAlerts from '@/components/OverspendingAlerts';
+import AboutContactCard from '@/components/AboutContactCard';
 import { Button } from '@/components/ui/button';
 import { generateAIInsights } from '@/lib/aiInsights';
 import { createTransaction, deleteTransaction, fetchTransactions, updateTransaction } from '@/lib/aiApi';
@@ -194,8 +195,14 @@ const Index = () => {
               <BudgetWidget budgets={mockBudgets} />
               <SavingsGoals goals={mockSavingsGoals} />
               <SavingsGoalPlanner transactions={transactions} />
-              <OverspendingAlerts transactions={transactions} />
             </div>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+              <AboutContactCard />
+            </div>
+            <OverspendingAlerts transactions={transactions} />
           </div>
         </div>
       </main>
