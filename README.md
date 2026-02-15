@@ -1,112 +1,118 @@
-# Welcome to your Lovable project
+# SpendSmart
 
-## Project info
+SpendSmart is an AI-assisted personal finance web app for tracking transactions, analyzing spending trends, and generating actionable saving insights.
 
-**URL**: https://lovable.dev/projects/a2396e0f-9215-4ef0-9d86-f90fbc5b8b50
+## Current Project Status
 
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/a2396e0f-9215-4ef0-9d86-f90fbc5b8b50) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## Recommended architecture for AI features
-
-Option A (best for this project): **Supabase + AI API (no heavy backend)**
-
-- Supabase handles auth (login/signup), database, and storage.
-- Keep Node server minimal and only for AI calls.
-- Current app includes UI + local logic for:
+### Implemented
+- Dashboard with total balance, monthly income, monthly expenses.
+- Add transaction flow with local-date default and instant UI updates.
+- Edit and delete transaction actions from recent transactions.
+- Spending-by-category visualization.
+- AI modules:
   - Monthly AI Report Generator
   - Personalized Savings Goal Planner
   - Overspending Alerts
-- To productionize, replace local logic in `src/lib/aiInsights.ts` with API calls from your lightweight Node endpoint.
+  - AI Assistant insights (trend/regression-based local logic)
+- Auth UI:
+  - Login page
+  - Sign-up page
+  - Protected dashboard route
+  - Logout
 
-## How can I deploy this project?
+### Backend/API
+- Node.js + Express API scaffolded in `server/`.
+- MySQL connection layer and AI service layer created.
+- Transaction and AI routes implemented.
 
-Simply open [Lovable](https://lovable.dev/projects/a2396e0f-9215-4ef0-9d86-f90fbc5b8b50) and click on Share -> Publish.
+### Important Note
+- The current frontend auth flow is simplified for demo usability.
+- Some backend authorization/persistence paths are in transition and can be hardened in the next phase.
 
-## Can I connect a custom domain to my Lovable project?
+## Tech Stack
 
-Yes, you can!
+- Vite
+- React
+- TypeScript
+- Tailwind CSS
+- shadcn-ui
+- Recharts
+- Node.js (Express)
+- MySQL
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Folder Highlights
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- `src/pages/Index.tsx`: Main dashboard.
+- `src/pages/Auth.tsx`: Login/Sign-up page.
+- `src/components/`: UI modules (transactions, AI cards, charts).
+- `src/lib/aiInsights.ts`: AI analytics logic.
+- `src/lib/aiApi.ts`: Frontend API layer.
+- `server/index.js`: API routes.
+- `server/db.js`: MySQL pool config.
+- `server/aiService.js`: backend AI calculations.
 
-## MySQL API quick run (user_id = 1)
+## Local Setup
 
-1. Configure `.env` with your MySQL credentials.
-2. Start API server:
+### 1. Install dependencies
+
+```sh
+npm install
+```
+
+### 2. Configure environment
+
+Create/update `.env` with your values:
+
+```env
+VITE_SUPABASE_URL="<your_supabase_url_if_used>"
+VITE_SUPABASE_PUBLISHABLE_KEY="<your_supabase_anon_key_if_used>"
+
+MYSQL_HOST="127.0.0.1"
+MYSQL_PORT="3306"
+MYSQL_USER="root"
+MYSQL_PASSWORD="<your_mysql_password>"
+MYSQL_DATABASE="budget_calculator"
+API_PORT="3001"
+```
+
+### 3. Run frontend
+
+```sh
+npm run dev
+```
+
+### 4. Run backend API (optional)
 
 ```sh
 npm run dev:api
 ```
 
-3. Start frontend in another terminal:
+### 5. Build for production
 
 ```sh
-npm run dev
+npm run build
 ```
 
-4. Health check:
+## Scripts
 
-```sh
-http://localhost:3001/api/health
-```
+- `npm run dev` - start frontend dev server
+- `npm run dev:api` - start backend API server
+- `npm run build` - production build
+- `npm run preview` - preview production build
+- `npm run lint` - lint codebase
 
-AI endpoints used by the dashboard:
+## Deployment
 
-- `GET /api/ai/monthly-report?userId=1`
-- `POST /api/ai/savings-plan`
-- `GET /api/ai/overspending-alerts?userId=1`
+Recommended quick deployment for frontend: Netlify
+
+- Build command: `npm run build`
+- Publish directory: `dist`
+
+You can keep backend deployment separate (Render/Railway/VM) if needed.
+
+## Next Enhancements
+
+- Full production-grade auth + token-enforced backend integration.
+- Budget and savings goals fully DB-backed.
+- Better edit transaction UX via modal form.
+- Backend validation, logging, and rate-limiting.
