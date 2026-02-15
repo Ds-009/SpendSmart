@@ -103,10 +103,10 @@ npm run build
 
 ## Deployment
 
-Recommended quick deployment for frontend: Netlify
+Recommended quick deployment for frontend: Github
 
 - Build command: `npm run build`
-- Publish directory: `dist`
+- Publish directory: `root`
 
 You can keep backend deployment separate (Render/Railway/VM) if needed.
 
