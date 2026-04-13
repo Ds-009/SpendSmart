@@ -59,6 +59,9 @@ export interface MonthlyAIReport {
     month: string;
     spending: number;
   }>;
+  forecastNextMonth?: number;
+  forecastMonthLabel?: string;
+  forecastTrend?: 'up' | 'down' | 'stable';
 }
 
 export interface SavingsPlan {

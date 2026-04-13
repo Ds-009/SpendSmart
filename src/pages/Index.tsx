@@ -15,8 +15,8 @@ import { Button } from '@/components/ui/button';
 import { generateAIInsights } from '@/lib/aiInsights';
 import { createTransaction, deleteTransaction, fetchTransactions, updateTransaction } from '@/lib/aiApi';
 import { useAuth } from '@/hooks/useAuth';
+import { mockTransactions } from '@/lib/datasetMockData';
 import {
-  mockTransactions,
   mockBudgets,
   mockSavingsGoals,
   calculateTotalBalance,

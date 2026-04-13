@@ -14,8 +14,8 @@ const DashboardHeader = ({ balance, income, expenses }: DashboardHeaderProps) =>
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-primary-foreground/80">Total Balance</p>
-            <h2 className="text-3xl font-bold text-primary-foreground mt-2">
-              ₹{balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+            <h2 className={`text-3xl font-bold mt-2 ${balance < 0 ? 'text-red-400' : 'text-primary-foreground'}`}>
+              ₹{balance < 0 ? '-' : ''}{Math.abs(balance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </h2>
           </div>
           <div className="h-12 w-12 rounded-full bg-primary-foreground/20 flex items-center justify-center">
@@ -27,7 +27,7 @@ const DashboardHeader = ({ balance, income, expenses }: DashboardHeaderProps) =>
       <Card className="p-6 bg-gradient-to-br from-success to-success/80 shadow-[var(--shadow-medium)]">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-success-foreground/80">Monthly Income</p>
+            <p className="text-sm font-medium text-success-foreground/80">Latest Available Month Income</p>
             <h2 className="text-3xl font-bold text-success-foreground mt-2">
               ₹{income.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </h2>
@@ -41,7 +41,7 @@ const DashboardHeader = ({ balance, income, expenses }: DashboardHeaderProps) =>
       <Card className="p-6 bg-gradient-to-br from-accent to-accent/80 shadow-[var(--shadow-medium)]">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-accent-foreground/80">Monthly Expenses</p>
+            <p className="text-sm font-medium text-accent-foreground/80">Latest Available Month Expenses</p>
             <h2 className="text-3xl font-bold text-accent-foreground mt-2">
               ₹{expenses.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </h2>

@@ -166,3 +166,88 @@ export const recurringToMonthly = (amount, frequency) => {
       return 0;
   }
 };
+
+// ML Service Integration
+const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:5000';
+
+export const callMLService = async (endpoint, payload) => {
+  try {
+    const response = await fetch(`${ML_SERVICE_URL}${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.warn(`ML Service ${endpoint} error:`, error);
+      return null;
+    }
+
+    return response.json();
+  } catch (error) {
+    console.warn(`ML Service connection error: ${error.message}`);
+    return null;
+  }
+};
+
+export const generateMonthlyReportML = async (transactions) => {
+  return callMLService('/api/monthly-report', { transactions });
+};
+
+export const detectOverspendingML = async (transactions) => {
+  const result = await callMLService('/api/detect-overspending', { transactions });
+  if (!result) return [];
+  
+  return (result.anomalies || []).map(anomaly => ({
+    id: `alert-${anomaly.category}-${Date.now()}`,
+    category: anomaly.category,
+    severity: anomaly.severity,
+    message: anomaly.message,
+  }));
+};
+
+export const generateSavingsPlanML = async (transactions, goalAmount, goalMonths) => {
+  return callMLService('/api/savings-plan', {
+    transactions,
+    goalAmount,
+    goalMonths,
+  });
+};
+
+export const generateAITipsML = async (transactions) => {
+  return callMLService('/api/ai-tips', { transactions });
+};
+
+// Fallback to local logic if ML service unavailable
+export const generateMonthlyReportHybrid = async (transactions) => {
+  const mlResult = await generateMonthlyReportML(transactions);
+  if (mlResult) {
+    return {
+      ...generateMonthlyReport(transactions),
+      mlForecast: mlResult,
+    };
+  }
+  return generateMonthlyReport(transactions);
+};
+
+export const detectOverspendingHybrid = async (transactions) => {
+  const mlResult = await detectOverspendingML(transactions);
+  if (mlResult.length > 0) {
+    return mlResult;
+  }
+  return detectOverspending(transactions);
+};
+
+export const generateSavingsPlanHybrid = async (transactions, goalAmount, goalMonths) => {
+  const mlResult = await generateSavingsPlanML(transactions, goalAmount, goalMonths);
+  if (mlResult && !mlResult.error) {
+    return mlResult;
+  }
+  return buildSavingsPlanFromInput({
+    goalName: 'Savings Goal',
+    targetAmount: goalAmount,
+    months: goalMonths,
+    recurringMonthlySpend: 0,
+  });
+};

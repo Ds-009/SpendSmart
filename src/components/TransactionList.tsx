@@ -77,7 +77,7 @@ const TransactionList = ({
                   transaction.type === 'income' ? 'text-success' : 'text-foreground'
                 }`}
               >
-                {transaction.type === 'income' ? '+' : '-'}INR {transaction.amount.toFixed(2)}
+                {transaction.type === 'income' ? '+' : '-'}₹{transaction.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
               </div>
               <Button
                 type="button"

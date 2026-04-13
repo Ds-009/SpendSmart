@@ -66,10 +66,21 @@ const AddTransactionDialog = ({ open, onOpenChange, onAddTransaction }: AddTrans
     event.preventDefault();
 
     const amount = Number(formData.amount);
+    const MAX_AMOUNT = 10_000_000; // 10 million INR max per transaction
+    
     if (!Number.isFinite(amount) || amount <= 0) {
       toast({
         title: 'Invalid amount',
         description: 'Please enter a valid positive number.',
+      });
+      return;
+    }
+
+    if (amount > MAX_AMOUNT) {
+      toast({
+        title: 'Amount too large',
+        description: `Maximum transaction amount is INR ${MAX_AMOUNT.toLocaleString()}. Please enter a realistic amount.`,
+        variant: 'destructive',
       });
       return;
     }
@@ -98,7 +109,7 @@ const AddTransactionDialog = ({ open, onOpenChange, onAddTransaction }: AddTrans
 
       toast({
         title: 'Transaction added',
-        description: `${transaction.description} - INR ${transaction.amount.toFixed(2)}`,
+        description: `${transaction.description} - ₹${transaction.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`,
       });
 
       onOpenChange(false);
@@ -145,6 +156,8 @@ const AddTransactionDialog = ({ open, onOpenChange, onAddTransaction }: AddTrans
                 id="amount"
                 type="number"
                 step="0.01"
+                min="0.01"
+                max="10000000"
                 placeholder="0.00"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}

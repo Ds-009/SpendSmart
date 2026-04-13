@@ -64,6 +64,34 @@ const linearRegression = (values: number[]): RegressionResult => {
   return { slope, intercept };
 };
 
+const buildForecastSummary = (
+  monthlySeries: Array<{ month: string; spending: number }>,
+  currentMonth: string | undefined
+) => {
+  if (monthlySeries.length < 3) {
+    return undefined;
+  }
+
+  const lastValues = monthlySeries.slice(-3).map((item) => item.spending);
+  const [thirdLast, secondLast, last] = lastValues;
+  const averageRecent = sum(lastValues) / lastValues.length;
+  const delta = ((last - secondLast) + (secondLast - thirdLast)) / 2;
+  const projected = Math.max(0, last + delta * 0.75 + (averageRecent - last) * 0.25);
+
+  const trend: 'up' | 'down' | 'stable' =
+    projected > last * 1.05 ? 'up' : projected < last * 0.95 ? 'down' : 'stable';
+
+  const currentDate = currentMonth ? parseDate(`${currentMonth}-01`) : new Date();
+  const nextMonthDate = new Date(currentDate);
+  nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+
+  return {
+    forecastNextMonth: Number(projected.toFixed(2)),
+    forecastMonthLabel: formatMonthLabel(nextMonthDate),
+    forecastTrend: trend,
+  };
+};
+
 const expenseCategoryBreakdown = (transactions: Transaction[]) => {
   const map: Record<string, number> = {};
   transactions
@@ -152,6 +180,8 @@ export const generateMonthlyAIReport = (transactions: Transaction[]): MonthlyAIR
     ? `You spent ${Math.abs(categoryChangePercent).toFixed(0)}% ${categoryChangePercent >= 0 ? 'more' : 'less'} on ${biggestCategory.category} this month.`
     : `Top category this month is ${biggestCategory.category}. Add more months for stronger trend predictions.`;
 
+  const forecastInfo = buildForecastSummary(monthlySeries, currentMonth);
+
   return {
     monthLabel: currentMonth ? formatMonthLabel(parseDate(`${currentMonth}-01`)) : formatMonthLabel(new Date()),
     totalSpending,
@@ -168,7 +198,53 @@ export const generateMonthlyAIReport = (transactions: Transaction[]): MonthlyAIR
     graphInsights,
     summary,
     monthlySeries,
+    forecastNextMonth: forecastInfo?.forecastNextMonth,
+    forecastMonthLabel: forecastInfo?.forecastMonthLabel,
+    forecastTrend: forecastInfo?.forecastTrend,
   };
+};
+
+export const generateMonthlyReportHybrid = async (transactions: Transaction[]): Promise<MonthlyAIReport> => {
+  try {
+    const response = await fetch('/api/ai/monthly-report');
+    if (response.ok) {
+      const payload = await response.json();
+      if (payload && Array.isArray(payload.monthlySeries)) {
+        const forecastSource = payload.mlForecast ?? payload;
+
+        const forecastNextMonth =
+          payload.forecastNextMonth ??
+          payload.forecast_next_month ??
+          forecastSource.forecast_next_month ??
+          forecastSource.forecastNextMonth;
+
+        const forecastMonthLabel =
+          payload.forecastMonthLabel ??
+          payload.forecast_month_label ??
+          forecastSource.forecast_month_label ??
+          forecastSource.forecastMonthLabel;
+
+        const forecastTrend =
+          payload.forecastTrend ??
+          payload.forecast_trend ??
+          forecastSource.forecast_trend ??
+          forecastSource.forecastTrend;
+
+        return {
+          ...payload,
+          forecastNextMonth: typeof forecastNextMonth === 'number' ? forecastNextMonth : undefined,
+          forecastMonthLabel: typeof forecastMonthLabel === 'string' ? forecastMonthLabel : undefined,
+          forecastTrend: forecastTrend === 'up' || forecastTrend === 'down' || forecastTrend === 'stable'
+            ? forecastTrend
+            : undefined,
+        } as MonthlyAIReport;
+      }
+    }
+  } catch {
+    // If the API is unavailable or does not return full report data, fall back to local report generation.
+  }
+
+  return generateMonthlyAIReport(transactions);
 };
 
 const isSubscriptionLike = (description: string) => {

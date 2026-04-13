@@ -8,6 +8,10 @@ import {
   generateMonthlyReport,
   normalizeTransactions,
   recurringToMonthly,
+  generateMonthlyReportHybrid,
+  detectOverspendingHybrid,
+  generateSavingsPlanHybrid,
+  generateAITipsML,
 } from './aiService.js';
 
 const app = express();
@@ -201,7 +205,7 @@ app.delete('/api/transactions/:transactionId', requireAuth, async (req, res) => 
 app.get('/api/ai/monthly-report', requireAuth, async (req, res) => {
   try {
     const transactions = await fetchUserTransactions(req.mysqlUserId);
-    const report = generateMonthlyReport(transactions);
+    const report = await generateMonthlyReportHybrid(transactions);
     res.json(report);
   } catch (error) {
     res.status(500).json({ error: 'Failed to generate monthly report', details: error.message });
@@ -225,17 +229,8 @@ app.post('/api/ai/savings-plan', requireAuth, async (req, res) => {
       [userId]
     );
 
-    const recurringMonthlySpend = rows.reduce(
-      (acc, item) => acc + recurringToMonthly(Number(item.amount), item.frequency),
-      0
-    );
-
-    const plan = buildSavingsPlanFromInput({
-      goalName,
-      targetAmount,
-      months,
-      recurringMonthlySpend,
-    });
+    const transactions = await fetchUserTransactions(userId);
+    const plan = await generateSavingsPlanHybrid(transactions, targetAmount, months);
 
     res.json(plan);
   } catch (error) {
@@ -248,7 +243,7 @@ app.get('/api/ai/overspending-alerts', requireAuth, async (req, res) => {
     const userId = req.mysqlUserId;
     const persist = String(req.query.persist ?? 'false').toLowerCase() === 'true';
     const transactions = await fetchUserTransactions(userId);
-    const alerts = detectOverspending(transactions);
+    const alerts = await detectOverspendingHybrid(transactions);
 
     if (persist && alerts.length > 0) {
       await Promise.all(
@@ -264,6 +259,18 @@ app.get('/api/ai/overspending-alerts', requireAuth, async (req, res) => {
     res.json(alerts);
   } catch (error) {
     res.status(500).json({ error: 'Failed to detect overspending alerts', details: error.message });
+  }
+});
+
+app.get('/api/ai/tips', requireAuth, async (req, res) => {
+  try {
+    const userId = req.mysqlUserId;
+    const transactions = await fetchUserTransactions(userId);
+    const tips = await generateAITipsML(transactions);
+
+    res.json({ tips: tips?.tips || [] });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to generate AI tips', details: error.message });
   }
 });
 
