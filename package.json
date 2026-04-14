@@ -3,7 +3,7 @@
     "private": true,
     "version": "0.0.0",
     "type": "module",
-    "homepage": "https://Ds-009.github.io/pixie-fin-pal",
+    "homepage": "https://Ds-009.github.io/SpendSmart",
     "scripts": {
         "dev": "vite",
         "build": "vite build",
